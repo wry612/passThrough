@@ -1,0 +1,37 @@
+.tab-bottom {
+  position: fixed;
+  left:0;
+  bottom:0;
+  width: 100%;
+
+}
+.grid-center {
+  display: block;
+  text-align: center;
+  color: #666;
+}
+.weui-grid__icon + .weui-grid__label {
+  margin-top: 5px;
+  margin-bottom: 0;
+}
+.active .weui-grid__icon + .weui-grid__label {
+  color: #09bb07;
+}
+.weui-grids {
+  background-color: #f1f1f1;
+}
+a{
+  text-decoration: none;
+}
+.weui-cells {
+  font-size:15px !important;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC","Helvetica Neue",STHeiti,"Microsoft Yahei",Tahoma,Simsun,sans-serif;
+}
+.small-id {
+  color:#999;
+  font-size: 12px;
+}
+.infinite-loading-container {
+  color:#999;
+  font-size: 12px;
+}
