@@ -1,7 +1,7 @@
 {
   "name": "pass-through",
   "version": "1.0.0",
-  "description": "A Vue.js project",
+  "description": "有人透传云",
   "author": "wangruoyu <wangruoyu@jsdttec.com>",
   "private": true,
   "scripts": {
