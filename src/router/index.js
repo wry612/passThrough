@@ -6,6 +6,7 @@ import Login from '@/components/login'
 import Template from '@/components/template'
 import Data from '@/components/data'
 import DataDetail from '@/components/data-detail'
+import HistoryData from '@/components/history-data'
 import Store from '../store'
 
 Vue.use(Router)
@@ -57,6 +58,14 @@ const routes =
       component: DataDetail,
       meta: {
         title: '数据点详情'
+      }
+    },
+    {
+      path: '/historyData',
+      name: 'HistoryData',
+      component: HistoryData,
+      meta: {
+        title: '历史查询'
       }
     }
   ]

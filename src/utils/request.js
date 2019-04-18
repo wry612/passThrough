@@ -1,6 +1,5 @@
 import axios from 'axios';
 //设置请求头
-axios.defaults.headers.post["Content-type"] = "application/json"
 // 创建 axios 实例
 const service = axios.create({
   baseURL: process.env.BASE_API, // api 的 base_url

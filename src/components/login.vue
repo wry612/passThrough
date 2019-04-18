@@ -3,7 +3,7 @@
     <div>
       <img src="../assets/login.png" alt="" class="ximg-demo">
     </div>
-    <div class="login-title">有人透传云</div>
+    <div class="login-title">汇利丰节能增效智联平台</div>
     <div style="padding: 10px 20px">
       <div class="border-top:1px solid #ccc;border-bottom:1px solid #ccc;">
         <x-input style="color:#fff;" type="text"placeholder="请输入账号" title="用户账号" v-model="account"></x-input>
@@ -53,6 +53,7 @@
             this.$vux.toast.show({
               text: '登陆成功',
               onShow() {
+                that.$cookies.set('account',res.data.account);
                 that.$cookies.set('token',res.data.token);
               },
               onHide() {
@@ -89,7 +90,7 @@
   }
   .login-title {
     color:#fff;
-    font-size: 24px;
+    font-size: 20px;
     text-align: center;
     letter-spacing: 4px;
   }

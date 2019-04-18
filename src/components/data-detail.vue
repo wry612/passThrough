@@ -347,7 +347,7 @@
           if (res.status === 0) {
             this.dataInfo = res.data;
           } else {
-            if (res.status > 4010 && res.status < 4022) {
+            if (res.status >= 4010 && res.status <= 4022) {
               this.$vux.toast.show({
                 text: res.info + ',需要重新登录',
                 onHide() {
@@ -375,7 +375,7 @@
           if (res.status === 0) {
             this.iotDatapointTemplateList = res.data.iotDatapointTemplateList;
           } else {
-            if (res.status > 4010 && res.status < 4022) {
+            if (res.status >= 4010 && res.status <= 4022) {
               this.$vux.toast.show({
                 text: res.info + ',需要重新登录',
                 onHide() {
@@ -414,7 +414,7 @@
             this.isEdit = false;
             this.getData();
           } else {
-            if (res.status > 4010 && res.status < 4022) {
+            if (res.status >= 4010 && res.status <= 4022) {
               this.$vux.toast.show({
                 text: res.info + ',需要重新登录',
                 onHide() {
@@ -451,7 +451,7 @@
     margin-right: 5px;
     color: red;
   }
-  .detail input[type="text"],.detail input[type="tel"],.detail select{
+  .detail input[type="text"],.detail input[type="tel"],.detail select,.detail input[type="number"]{
     border: 1px solid #ccc;
     border-radius:4px;
     padding: 5px;

@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <div class="detail">
     <card>
       <div slot="content">
         <flexbox>
           <flexbox-item :span="1/4">
-            <img src="../assets/nopic.png" alt="" style="width: 100%">
+            <img src="../assets/nopic.jpg" alt="" style="width: 80%">
           </flexbox-item>
           <flexbox-item>
             <div>{{deviceDetail.name}}</div>
@@ -58,20 +58,35 @@
         </flexbox>
       </div>
     </card>
+    <div class="btn-refresh">
+        <x-button mini type="primary" @click.native="getLastData">刷新数据</x-button>
+    </div>
     <group v-for="(item,index) in pointInfo.iotDataDescription" :key="index">
-      <cell-box>
-        <flexbox>
+      <cell-box class="datas">
+        <flexbox justify="space-between">
           <flexbox-item :span="1/12">
-            <img src="../assets/icon-c.png" alt="" style="width: 100%">
+            <img src="../assets/icon-c.png" alt="" style="width:100%">
           </flexbox-item>
-          <flexbox-item :span="7/12">
+          <flexbox-item :span="6/12">
             <div>{{item.name}}</div>
-            <div style="font-size: 12px">从机序号：{{pointInfo.slaveName}}</div>
-            <div style="font-size: 12px">更新时间：{{new Date() | dateFormat('yyyy-MM-dd hh:mm')}}</div>
+            <div style="font-size: 12px">从机序号:{{pointInfo.slaveName}}</div>
+            <div style="font-size: 10px">更新时间:{{new Date() | dateFormat('yyyy-MM-dd hh:mm')}}</div>
           </flexbox-item>
-          <flexbox-item>
-            <span v-if="lastData.length&&item.type==0">{{lastData[index]['value']}}{{item.unit}}</span>
-            <span v-if="lastData.length&&item.type==1">{{lastData[index]['value'] == 0?'关':'开'}}</span>
+          <flexbox-item style="font-size: 12px">
+            <span v-if="lastData.length&&item.type==0&&lastData[index]['writeRead']==0">{{lastData[index]['value']}}{{item.unit}}</span>
+            <span v-if="lastData.length&&item.type==0&&lastData[index]['writeRead']!=0"><input style="width: 80%;"
+                                                                                               type="number"
+                                                                                               v-model="lastData[index]['value']"
+                                                                                               @blur="editDataPoints(lastData[index])">{{item.unit}}</span>
+            <span v-if="lastData.length&&item.type==1&&lastData[index]['writeRead']==0">{{lastData[index]['value'] == 0?'关':'开'}}</span>
+            <span v-if="lastData.length&&item.type==1&&lastData[index]['writeRead']!=0"><inline-x-switch
+              v-model="lastData[index]['value']" :value-map="[0,1]"
+              @on-change="editDataPoints(lastData[index])"></inline-x-switch></span>
+          </flexbox-item>
+          <flexbox-item v-if="lastData.length" :span="1/12">
+            <router-link :to="{ path: '/historyData', query: { devId: lastData[index].deviceId,slaveIndex: lastData[index].slaveIndex,dataId: lastData[index].dataPointId }}">
+              <img src="../assets/echart.png" alt="" style="width: 100%">
+            </router-link>
           </flexbox-item>
         </flexbox>
       </cell-box>
@@ -81,7 +96,7 @@
 </template>
 
 <script>
-  import {Grid, GridItem, CellBox, Flexbox, FlexboxItem, Icon, Toast, Card,Group} from 'vux'
+  import {Grid, GridItem, CellBox, Flexbox, FlexboxItem, Icon, Toast, Card, Group, InlineXSwitch,XButton} from 'vux'
   import device from '@/api/device';
   import InfiniteLoading from 'vue-infinite-loading';
 
@@ -91,11 +106,13 @@
       Grid,
       GridItem,
       CellBox,
+      XButton,
       Group,
       Flexbox,
       FlexboxItem,
       Toast,
       Icon,
+      InlineXSwitch,
       Card,
       InfiniteLoading
     },
@@ -118,7 +135,41 @@
     },
     methods: {
       minute(second) {
-        return Math.ceil(second/60);
+        return Math.ceil(second / 60);
+      },
+      async editDataPoints(item) {
+        const params = {
+          token: this.$cookies.get('token'),
+          devId: item.deviceId,
+          pointId: item.dataPointId,
+          slaveIndex: item.slaveIndex,
+          value: item.value
+        };
+        const data = await device.setDataPoint(params);
+        if (data.status == 200) {
+          const res = data.data;
+          const that = this;
+          if (res.status === 0) {
+            this.$vux.toast.show({
+              text: '数据点修改成功',
+            })
+          } else {
+            if (res.status >= 4010 && res.status <= 4022) {
+              this.$vux.toast.show({
+                type: 'warn',
+                text: res.info + ',需要重新登录',
+                onHide() {
+                  that.$router.push('/');
+                }
+              })
+            } else {
+              this.$vux.toast.show({
+                type: 'warn',
+                text: res.info
+              })
+            }
+          }
+        }
       },
       async getDevice() {
         const params = {
@@ -126,7 +177,7 @@
           deviceId: this.deviceId
         };
         const data = await device.deviceDetail(params);
-        if(data.status == 200) {
+        if (data.status == 200) {
           const res = data.data;
           const that = this;
           if (res.status === 0) {
@@ -134,7 +185,7 @@
             this.deviceSlaves = res.data.deviceSlaves[0];
             this.getDataPointInfoByDevice();
           } else {
-            if (res.status > 4010 && res.status < 4022) {
+            if (res.status >= 4010 && res.status <= 4022) {
               this.$vux.toast.show({
                 text: res.info + ',需要重新登录',
                 onHide() {
@@ -156,14 +207,14 @@
           deviceIds: [this.deviceId]
         };
         const data = await device.getDataPointInfoByDevice(params);
-        if(data.status == 200) {
+        if (data.status == 200) {
           const res = data.data;
           const that = this;
           if (res.status === 0) {
             this.pointInfo = res.data[0].slaves[0];
             this.getLastData();
           } else {
-            if (res.status > 4010 && res.status < 4022) {
+            if (res.status >= 4010 && res.status <= 4022) {
               this.$vux.toast.show({
                 text: res.info + ',需要重新登录',
                 onHide() {
@@ -193,13 +244,13 @@
           devDataIds: list
         };
         const data = await device.getLastData(params);
-        if(data.status == 200) {
+        if (data.status == 200) {
           const res = data.data;
           const that = this;
           if (res.status === 0) {
             this.lastData = res.data;
           } else {
-            if (res.status > 4010 && res.status < 4022) {
+            if (res.status >= 4010 && res.status <= 4022) {
               this.$vux.toast.show({
                 text: res.info + ',需要重新登录',
                 onHide() {
@@ -222,10 +273,24 @@
 
 <style lang="scss" type="text/css">
   @import "../assets/common.scss";
+  .datas.weui-cell{
+    padding: 10px 0
+  }
   .weui-panel {
     padding: 15px;
     border: 1px solid #eee;
     border-radius: 4px;
     box-shadow: 0 0 10px #ccc;
+  }
+  .detail input[type="number"]{
+    border: 1px solid #ccc;
+    border-radius:4px;
+    padding: 5px;
+    line-height: 24px;
+    box-sizing: border-box;
+  }
+  .btn-refresh {
+    text-align: right;
+    margin: 15px 0 0;
   }
 </style>

@@ -4,7 +4,9 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import  { ToastPlugin } from 'vux'
-
+import Antd from 'ant-design-vue'
+import 'ant-design-vue/dist/antd.css'
+Vue.use(Antd)
 localStorage.token = '';
 Vue.config.productionTip = false
 Vue.use(ToastPlugin)
@@ -12,6 +14,9 @@ import VueCookies from 'vue-cookies'
 Vue.use(VueCookies)
 // 默认参数
 Vue.use(ToastPlugin, {position: 'top'})
+import echarts from 'echarts'
+
+Vue.prototype.$echarts = echarts
 Vue.filter('dateFormat', function (value, fmt) {
   let getDate = new Date(value);
   let o = {

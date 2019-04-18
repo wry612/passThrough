@@ -31,7 +31,21 @@ export default {
    */
   getLastData(params) {
     return post('/usrCloud/datadic/getLastData', params);
+  },
+
+  /**
+   * 根据时间段获取数据点历史记录
+   *
+   */
+  getDataHisByTimePeriod(params) {
+    return post('/usrCloud/datadic/getDataHisByTimePeriod', params);
+  },
+
+  /**
+   * 获取最后一条数据
+   *
+   */
+  setDataPoint(params) {
+    return post('/devData/setDataPoint', params);
   }
-
-
 };

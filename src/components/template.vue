@@ -75,7 +75,7 @@
               this.$refs.infiniteLoading.$emit('$InfiniteLoading:complete');
             }
           } else {
-            if (res.status > 4010 && res.status < 4022) {
+            if (res.status >= 4010 && res.status <= 4022) {
               this.$vux.toast.show({
                 text: res.info + ',需要重新登录',
                 onHide() {

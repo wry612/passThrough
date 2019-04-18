@@ -9,4 +9,12 @@ export default {
     return post('/usrCloud/user/login', params);
   },
 
+  /**
+   * 用户信息
+   * @param {*} data
+   */
+  getUser(params) {
+    return post('/usrCloud/user/getUser', params);
+  },
+
 };
