@@ -79,7 +79,7 @@
     top:0;
     width: 100%;
     height: 100%;
-    background: url(../assets/login-bg.png) center no-repeat;
+    background: url(../assets/login-bg.jpg) center no-repeat;
   }
   .ximg-demo {
     width: 100%;
