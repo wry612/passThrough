@@ -73,13 +73,17 @@
 </script>
 
 <style lang="scss">
+  .weui-input{
+    height: 21px !important;
+    line-height: 21px !important;
+  }
   .login {
     position: absolute;
     left: 0;
     top:0;
     width: 100%;
     height: 100%;
-    background: url(../assets/login-bg.jpg) center no-repeat;
+    background: #1769cd;
   }
   .ximg-demo {
     width: 100%;

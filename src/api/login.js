@@ -1,4 +1,5 @@
 import { get, post } from '@/utils/request';
+let base = '/apis';
 export default {
 
   /**
@@ -6,7 +7,7 @@ export default {
    * @param {*} data
    */
   login(params) {
-    return post('/usrCloud/user/login', params);
+    return post(base+'/user/login', params);
   },
 
   /**
@@ -14,7 +15,7 @@ export default {
    * @param {*} data
    */
   getUser(params) {
-    return post('/usrCloud/user/getUser', params);
+    return post(base+'/user/getUser', params);
   },
 
 };

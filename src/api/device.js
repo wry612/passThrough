@@ -1,4 +1,6 @@
 import { get, post } from '@/utils/request';
+let base = '/apis';
+let service = '/service'
 export default {
 
   /**
@@ -6,7 +8,7 @@ export default {
    * @param {*} data
    */
   deviceList(params) {
-    return post('/usrCloud/dev/getDevs', params);
+    return post(base+'/dev/getDevs', params);
   },
 
   /**
@@ -14,7 +16,7 @@ export default {
    *
    */
   deviceDetail(params) {
-    return post('/usrCloud/dev/getDevice', params);
+    return post(base+'/dev/getDevice', params);
   },
 
   /**
@@ -22,7 +24,7 @@ export default {
    *
    */
   getDataPointInfoByDevice(params) {
-    return post('/usrCloud/datadic/getDataPointInfoByDevice', params);
+    return post(base+'/datadic/getDataPointInfoByDevice', params);
   },
 
   /**
@@ -30,7 +32,7 @@ export default {
    *
    */
   getLastData(params) {
-    return post('/usrCloud/datadic/getLastData', params);
+    return post(base+'/datadic/getLastData', params);
   },
 
   /**
@@ -38,7 +40,7 @@ export default {
    *
    */
   getDataHisByTimePeriod(params) {
-    return post('/usrCloud/datadic/getDataHisByTimePeriod', params);
+    return post(base+'/datadic/getDataHisByTimePeriod', params);
   },
 
   /**
@@ -46,6 +48,6 @@ export default {
    *
    */
   setDataPoint(params) {
-    return post('/devData/setDataPoint', params);
+    return post(service+'/devData/setDataPoint', params);
   }
 };

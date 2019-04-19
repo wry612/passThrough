@@ -155,7 +155,7 @@
         const params = {
           token: this.$cookies.get('token'),
           page_param: {
-            offset: ++this.pageIndex,
+            offset: (++this.pageIndex)*this.pageSize,
             limit: this.pageSize
           }
         };

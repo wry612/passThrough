@@ -64,7 +64,7 @@
       async onInfinite() {
         const params = {
           token: this.$cookies.get('token'),
-          offset: ++this.pageIndex,
+          offset: (++this.pageIndex)*this.pageSize,
           limit: this.pageSize,
           templateId: this.templateId
         };
