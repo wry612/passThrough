@@ -74,14 +74,13 @@
           </flexbox-item>
           <flexbox-item style="font-size: 12px">
             <span v-if="lastData.length&&item.type==0&&lastData[index]['writeRead']==0">{{lastData[index]['value']}}{{item.unit}}</span>
-            <span v-if="lastData.length&&item.type==0&&lastData[index]['writeRead']!=0"><input style="width: 80%;"
-                                                                                               type="number"
-                                                                                               v-model="lastData[index]['value']"
-                                                                                               @blur="editDataPoints(lastData[index])">{{item.unit}}</span>
+            <span v-if="lastData.length&&item.type==0&&lastData[index]['writeRead']!=0">
+              {{lastData[index]['value']}}{{item.unit}}<img @click="blurPromot(lastData[index])" src="../assets/edit.png" style="width: 20px;height:20px;margin-left: 4px;" alt="">
+            </span>
             <span v-if="lastData.length&&item.type==1&&lastData[index]['writeRead']==0">{{lastData[index]['value'] == 0?'关':'开'}}</span>
             <span v-if="lastData.length&&item.type==1&&lastData[index]['writeRead']!=0"><inline-x-switch
               v-model="lastData[index]['value']" :value-map="[0,1]"
-              @on-change="editDataPoints(lastData[index])"></inline-x-switch></span>
+              @on-change="changeSwitch(lastData[index])"></inline-x-switch></span>
           </flexbox-item>
           <flexbox-item v-if="lastData.length" :span="1/12">
             <router-link :to="{ path: '/historyData', query: { devId: lastData[index].deviceId,slaveIndex: lastData[index].slaveIndex,dataId: lastData[index].dataPointId }}">
@@ -91,17 +90,32 @@
         </flexbox>
       </cell-box>
     </group>
+      <confirm v-model="inputShow"
+               show-input
+               title="编辑数值"
+               :input-attrs="{type: 'number'}"
+               @on-confirm="onConfirm">
+      </confirm>
+    <confirm v-model="show"
+             title="编辑开关"
+             @on-cancel="onCancel"
+             @on-confirm="onConfirmSwitch">
+      <p style="text-align:center;">确认修改当前开关的设置？</p>
+    </confirm>
   </div>
 
 </template>
 
 <script>
-  import {Grid, GridItem, CellBox, Flexbox, FlexboxItem, Icon, Toast, Card, Group, InlineXSwitch,XButton} from 'vux'
+  import {Grid, GridItem, CellBox, Flexbox, FlexboxItem, Icon, Toast, Card, Group, InlineXSwitch,XButton,Confirm,TransferDomDirective as TransferDom} from 'vux'
   import device from '@/api/device';
   import InfiniteLoading from 'vue-infinite-loading';
 
   export default {
     name: 'deviceDetail',
+    directives: {
+      TransferDom
+    },
     components: {
       Grid,
       GridItem,
@@ -114,14 +128,19 @@
       Icon,
       InlineXSwitch,
       Card,
-      InfiniteLoading
+      InfiniteLoading,
+      Confirm
     },
     data() {
       return {
         deviceDetail: {},
         pointInfo: {},
         deviceSlaves: {},
-        lastData: []
+        lastData: [],
+        inputShow: false,
+        currItem: {},
+        show: false,
+        flag: true
       }
     },
     created() {
@@ -136,6 +155,42 @@
     methods: {
       minute(second) {
         return Math.ceil(second / 60);
+      },
+      onCancel () {
+        this.flag = false;
+        this.currItem.value = this.currItem.value == 0 ? 1 : 0;
+      },
+      onHide () {
+        console.log('on hide')
+      },
+      onShow () {
+        console.log('on show')
+      },
+      blurPromot(item) {
+        this.currItem = item;
+        this.inputShow = true;
+      },
+      changeSwitch(item) {
+        this.currItem = item;
+        if(this.flag) {
+          this.show = true;
+        } else {
+          this.flag = true;
+        }
+      },
+      onConfirm (msg) {
+        if (msg) {
+          this.currItem['value'] = msg;
+          this.editDataPoints(this.currItem);
+        } else {
+          this.$vux.toast.show({
+            type: 'warn',
+            text: '设置值不能为空'
+          })
+        }
+      },
+      onConfirmSwitch() {
+        this.editDataPoints(this.currItem);
       },
       async editDataPoints(item) {
         const params = {
@@ -274,7 +329,7 @@
 <style lang="scss" type="text/css">
   @import "../assets/common.scss";
   .datas.weui-cell{
-    padding: 10px 0
+    padding: 10px;
   }
   .weui-panel {
     padding: 15px;
@@ -292,5 +347,6 @@
   .btn-refresh {
     text-align: right;
     margin: 15px 0 0;
+    padding: 0 10px;
   }
 </style>
