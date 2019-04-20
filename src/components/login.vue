@@ -1,6 +1,6 @@
 <template>
   <div class="login">
-    <div>
+    <div style="text-align:center;">
       <img src="../assets/login.png" alt="" class="ximg-demo">
     </div>
     <div class="login-title">汇利丰节能增效智联平台</div>
@@ -86,14 +86,14 @@
     background: #1769cd;
   }
   .ximg-demo {
-    width: 100%;
+    width: 80%;
     height: auto;
   }
   input::-webkit-input-placeholder {
     color: #ccc;
   }
   .login-title {
-    color:#fff;
+    color:#333;
     font-size: 20px;
     text-align: center;
     letter-spacing: 4px;
