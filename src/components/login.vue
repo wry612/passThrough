@@ -1,13 +1,13 @@
 <template>
   <div class="login">
-    <div style="text-align:center;">
+    <div style="text-align:center;background:#1769cd">
       <img src="../assets/login.png" alt="" class="ximg-demo">
     </div>
     <div class="login-title">汇利丰节能增效智联平台</div>
     <div style="padding: 10px 20px">
       <div class="border-top:1px solid #ccc;border-bottom:1px solid #ccc;">
-        <x-input style="color:#fff;" type="text"placeholder="请输入账号" title="用户账号" v-model="account"></x-input>
-        <x-input style="color:#fff;" type="password" placeholder="请输入密码" title="用户密码" v-model="password"></x-input>
+        <x-input type="text" placeholder="请输入账号" title="用户账号" v-model="account"></x-input>
+        <x-input type="password" placeholder="请输入密码" title="用户密码" v-model="password"></x-input>
       </div>
       <div style="padding: 15px 0;">
         <x-button @click.native="login" type="primary">登录</x-button>
@@ -83,17 +83,13 @@
     top:0;
     width: 100%;
     height: 100%;
-    background: #1769cd;
   }
   .ximg-demo {
     width: 80%;
     height: auto;
   }
-  input::-webkit-input-placeholder {
-    color: #ccc;
-  }
   .login-title {
-    color:#333;
+    margin-top: 20px;
     font-size: 20px;
     text-align: center;
     letter-spacing: 4px;
