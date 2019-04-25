@@ -100,7 +100,7 @@
       drawLine(list){
         let date = [];
         let data = [];
-        let name = list[0].slaveName;
+        let name = list[0]?list[0].slaveName: '';
         for (let i = 0; i < list.length; i++) {
           date.push(this.moment(list[i].generateTime*1000).format('mm:ss MM-DD'));
           data.push(list[i].value);

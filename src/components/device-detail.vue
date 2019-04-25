@@ -69,21 +69,21 @@
             </flexbox-item>
             <flexbox-item :span="6/12">
               <div>{{item.name}}</div>
-              <div style="font-size: 12px">从机名称:{{pointInfo.slaveName}}</div>
+              <div style="font-size: 12px">从机名称:{{item.slaveName}}</div>
               <div style="font-size: 10px">更新时间:{{new Date() | dateFormat('yyyy-MM-dd hh:mm')}}</div>
             </flexbox-item>
             <flexbox-item style="font-size: 12px">
-              <span v-if="lastData.length&&item.type==0&&lastData[index]&&lastData[index]['writeRead']==0">{{lastData[index]['value']}}{{item.unit}}</span>
-              <span v-if="lastData.length&&item.type==0&&lastData[index]&&lastData[index]['writeRead']!=0">
-              {{lastData[index]['value']}}{{item.unit}}<img @click="blurPromot(lastData[index])" src="../assets/edit.png" style="width: 20px;height:20px;margin-left: 4px;" alt="">
-            </span>
-              <span v-if="lastData.length&&item.type==1&&lastData[index]&&lastData[index]['writeRead']==0">{{lastData[index]['value'] == 0?'关':'开'}}</span>
-              <span v-if="lastData.length&&item.type==1&&lastData[index]&&lastData[index]['writeRead']!=0"><inline-x-switch
+              <span v-if="item.type==0">
+              {{lastData[index]?lastData[index]['value']:'--'}}{{item.unit}}
+                <img v-if="item['iotModbusDataCmd']['writeRead']!=0" @click="blurPromot(lastData[index],item)" src="../assets/edit.png" style="width: 20px;height:20px;margin-left: 4px;" alt="">
+              </span>
+              <span v-if="item.type==1&&item['iotModbusDataCmd']['writeRead']==0">{{lastData[index]['value'] == 0?'关':'开'}}</span>
+              <span v-if="item.type==1&&lastData[index]&&item['iotModbusDataCmd']['writeRead']!=0"><inline-x-switch
                 v-model="lastData[index]['value']" :value-map="[0,1]"
-                @on-change="changeSwitch(lastData[index])"></inline-x-switch></span>
+                @on-change="changeSwitch(lastData[index],item)"></inline-x-switch></span>
             </flexbox-item>
-            <flexbox-item v-if="lastData.length&&lastData[index]" :span="1/12">
-              <router-link :to="{ path: '/historyData', query: { devId: lastData[index].deviceId,slaveIndex: lastData[index].slaveIndex,dataId: lastData[index].dataPointId }}">
+            <flexbox-item v-if="lastData.length" :span="1/12">
+              <router-link :to="{ path: '/historyData', query: { devId: item.deviceId,slaveIndex: item.slaveIndex,dataId: item.id }}">
                 <img src="../assets/echart.png" alt="" style="width: 100%">
               </router-link>
             </flexbox-item>
@@ -166,12 +166,12 @@
       onShow () {
         console.log('on show')
       },
-      blurPromot(item) {
-        this.currItem = item;
+      blurPromot(item,itemBk) {
+        this.currItem = item ? item : itemBk;
         this.inputShow = true;
       },
-      changeSwitch(item) {
-        this.currItem = item;
+      changeSwitch(item,itemBk) {
+        this.currItem = item ? item : itemBk;
         if(this.flag) {
           this.show = true;
         } else {
@@ -196,7 +196,7 @@
         const params = {
           token: this.$cookies.get('token'),
           devId: item.deviceId,
-          pointId: item.dataPointId,
+          pointId: item.dataPointId ? item.dataPointId : item.id,
           slaveIndex: item.slaveIndex,
           value: item.value
         };
@@ -208,6 +208,7 @@
             this.$vux.toast.show({
               text: '数据点修改成功',
             })
+            this.getDataPointInfoByDevice();
           } else {
             if (res.status >= 4010 && res.status <= 4022) {
               this.$vux.toast.show({
