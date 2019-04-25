@@ -61,35 +61,36 @@
     <div class="btn-refresh">
         <x-button mini type="primary" @click.native="getLastData">刷新数据</x-button>
     </div>
-    <group v-for="(item,index) in pointInfo.iotDataDescription" :key="index">
-      <cell-box class="datas">
-        <flexbox justify="space-between">
-          <flexbox-item :span="1/12">
-            <img src="../assets/icon-c.png" alt="" style="width:100%">
-          </flexbox-item>
-          <flexbox-item :span="6/12">
-            <div>{{item.name}}</div>
-            <div style="font-size: 12px">从机序号:{{pointInfo.slaveName}}</div>
-            <div style="font-size: 10px">更新时间:{{new Date() | dateFormat('yyyy-MM-dd hh:mm')}}</div>
-          </flexbox-item>
-          <flexbox-item style="font-size: 12px">
-            <span v-if="lastData.length&&item.type==0&&lastData[index]['writeRead']==0">{{lastData[index]['value']}}{{item.unit}}</span>
-            <span v-if="lastData.length&&item.type==0&&lastData[index]['writeRead']!=0">
+      <group v-for="(item,index) in pointInfo">
+        <cell-box class="datas">
+          <flexbox justify="space-between">
+            <flexbox-item :span="1/12">
+              <img src="../assets/icon-c.png" alt="" style="width:100%">
+            </flexbox-item>
+            <flexbox-item :span="6/12">
+              <div>{{item.name}}</div>
+              <div style="font-size: 12px">从机名称:{{pointInfo.slaveName}}</div>
+              <div style="font-size: 10px">更新时间:{{new Date() | dateFormat('yyyy-MM-dd hh:mm')}}</div>
+            </flexbox-item>
+            <flexbox-item style="font-size: 12px">
+              <span v-if="lastData.length&&item.type==0&&lastData[index]&&lastData[index]['writeRead']==0">{{lastData[index]['value']}}{{item.unit}}</span>
+              <span v-if="lastData.length&&item.type==0&&lastData[index]&&lastData[index]['writeRead']!=0">
               {{lastData[index]['value']}}{{item.unit}}<img @click="blurPromot(lastData[index])" src="../assets/edit.png" style="width: 20px;height:20px;margin-left: 4px;" alt="">
             </span>
-            <span v-if="lastData.length&&item.type==1&&lastData[index]['writeRead']==0">{{lastData[index]['value'] == 0?'关':'开'}}</span>
-            <span v-if="lastData.length&&item.type==1&&lastData[index]['writeRead']!=0"><inline-x-switch
-              v-model="lastData[index]['value']" :value-map="[0,1]"
-              @on-change="changeSwitch(lastData[index])"></inline-x-switch></span>
-          </flexbox-item>
-          <flexbox-item v-if="lastData.length" :span="1/12">
-            <router-link :to="{ path: '/historyData', query: { devId: lastData[index].deviceId,slaveIndex: lastData[index].slaveIndex,dataId: lastData[index].dataPointId }}">
-              <img src="../assets/echart.png" alt="" style="width: 100%">
-            </router-link>
-          </flexbox-item>
-        </flexbox>
-      </cell-box>
-    </group>
+              <span v-if="lastData.length&&item.type==1&&lastData[index]&&lastData[index]['writeRead']==0">{{lastData[index]['value'] == 0?'关':'开'}}</span>
+              <span v-if="lastData.length&&item.type==1&&lastData[index]&&lastData[index]['writeRead']!=0"><inline-x-switch
+                v-model="lastData[index]['value']" :value-map="[0,1]"
+                @on-change="changeSwitch(lastData[index])"></inline-x-switch></span>
+            </flexbox-item>
+            <flexbox-item v-if="lastData.length&&lastData[index]" :span="1/12">
+              <router-link :to="{ path: '/historyData', query: { devId: lastData[index].deviceId,slaveIndex: lastData[index].slaveIndex,dataId: lastData[index].dataPointId }}">
+                <img src="../assets/echart.png" alt="" style="width: 100%">
+              </router-link>
+            </flexbox-item>
+          </flexbox>
+        </cell-box>
+      </group>
+
       <confirm v-model="inputShow"
                show-input
                title="编辑数值"
@@ -134,8 +135,7 @@
     data() {
       return {
         deviceDetail: {},
-        pointInfo: {},
-        deviceSlaves: {},
+        pointInfo: [],
         lastData: [],
         inputShow: false,
         currItem: {},
@@ -237,7 +237,6 @@
           const that = this;
           if (res.status === 0) {
             this.deviceDetail = res.data.device;
-            this.deviceSlaves = res.data.deviceSlaves[0];
             this.getDataPointInfoByDevice();
           } else {
             if (res.status >= 4010 && res.status <= 4022) {
@@ -266,7 +265,16 @@
           const res = data.data;
           const that = this;
           if (res.status === 0) {
-            this.pointInfo = res.data[0].slaves[0];
+            let list = [];
+            for(let i = 0; i < res.data[0].slaves.length; i++) {
+              for(let j = 0; j < res.data[0].slaves[i].iotDataDescription.length; j++) {
+                res.data[0].slaves[i].iotDataDescription[j].deviceId = res.data[0].slaves[i].deviceId;
+                res.data[0].slaves[i].iotDataDescription[j].slaveIndex = res.data[0].slaves[i].slaveIndex;
+                res.data[0].slaves[i].iotDataDescription[j].slaveName = res.data[0].slaves[i].slaveName;
+                list.push(res.data[0].slaves[i].iotDataDescription[j]);
+              }
+            }
+            this.pointInfo = list;
             this.getLastData();
           } else {
             if (res.status >= 4010 && res.status <= 4022) {
@@ -287,13 +295,14 @@
 
       },
       async getLastData() {
-        let list = this.pointInfo.iotDataDescription.map(item => {
-          return {
-            devId: this.deviceSlaves.deviceId,
-            slaveIndex: this.deviceSlaves.slaveIndex,
-            dataId: item.id
-          }
-        });
+        let list = [];
+        for(let i = 0; i < this.pointInfo.length; i++) {
+          list.push({
+            devId: this.pointInfo[i].deviceId,
+            slaveIndex: this.pointInfo[i].slaveIndex,
+            dataId: this.pointInfo[i].id
+          })
+        }
         const params = {
           token: this.$cookies.get('token'),
           devDataIds: list
