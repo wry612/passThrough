@@ -142,6 +142,8 @@
                   that.$router.push('/');
                 }
               })
+            } else if(res.status == 5126) {
+              console.log('请求太频繁');
             } else {
               this.$vux.toast.show({
                 type: 'warn',
@@ -181,6 +183,8 @@
                   that.$router.push('/');
                 }
               })
+            } else if(res.status == 5126) {
+              console.log('请求太频繁');
             } else {
               this.$vux.toast.show({
                 type: 'warn',
