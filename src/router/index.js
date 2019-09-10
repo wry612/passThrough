@@ -7,6 +7,9 @@ import Template from '@/components/template'
 import Data from '@/components/data'
 import DataDetail from '@/components/data-detail'
 import HistoryData from '@/components/history-data'
+import WechatLogin from '@/components/wechat-login'
+import WechatRegister from '@/components/wechat-register'
+import BindUser from '@/components/bind-user'
 import Store from '../store'
 
 Vue.use(Router)
@@ -67,10 +70,35 @@ const routes =
       meta: {
         title: '历史查询'
       }
+    },
+    {
+      path: '/wechatLogin',
+      name: 'WechatLogin',
+      component: WechatLogin,
+      meta: {
+        title: '微信登陆'
+      }
+    },
+    {
+      path: '/register',
+      name: 'WechatRegister',
+      component: WechatRegister,
+      meta: {
+        title: '微信注册'
+      }
+    },
+    {
+      path: '/bindUser',
+      name: 'BindUser',
+      component: BindUser,
+      meta: {
+        title: '微信绑定'
+      }
     }
   ]
 // 路由配置
 const router = new Router({
+  mode: 'history',
   routes
 })
 router.afterEach((to) => {

@@ -24,7 +24,7 @@
             <span v-if="deviceDetail.protocol==5">烟感协议</span>
           </flexbox-item>
         </flexbox>
-        <flexbox style="color:#999;font-size: 14px">
+        <flexbox style="color:#999;font-size: 14px" v-if="isShowPassword">
           <flexbox-item :span="1/4">
             通讯密码：
           </flexbox-item>
@@ -139,6 +139,7 @@
         lastData: [],
         inputShow: false,
         currItem: {},
+        isShowPassword: false,
         show: false,
         flag: true
       }
@@ -149,7 +150,7 @@
       if (!this.deviceId) {
         return;
       }
-
+      this.isShowPassword = this.$cookies.get('account') == 'hlfchina' ? true : false;
       this.getDevice();
     },
     methods: {
@@ -200,7 +201,12 @@
           slaveIndex: item.slaveIndex,
           value: item.value
         };
-        const data = await device.setDataPoint(params);
+        const data = await device.setDataPoint(params,{
+          headers:{
+            loginuser:this.$cookies.get('account'),
+            token: this.$cookies.get('token')
+          }
+        });
         if (data.status == 200) {
           const res = data.data;
           const that = this;

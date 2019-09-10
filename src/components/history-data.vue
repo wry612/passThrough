@@ -104,7 +104,7 @@
         let data = [];
         let name = list[0]?list[0].slaveName: '';
         for (let i = 0; i < list.length; i++) {
-          date.push(this.moment(list[i].generateTime*1000).format('mm:ss MM-DD'));
+          date.push(this.moment(list[i].generateTime*1000).format('MM-DD HH:mm:ss'));
           data.push(list[i].value);
         }
         // 基于准备好的dom，初始化echarts实例

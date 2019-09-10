@@ -12,6 +12,14 @@ export default {
   },
 
   /**
+   * 设备列表L2
+   * @param {*} data
+   */
+  deviceListL2(params,config) {
+    return post(service+'/sysUser/getUserDevsByCondition', params,config);
+  },
+
+  /**
    * 设备详情
    *
    */
@@ -47,7 +55,7 @@ export default {
    * 获取最后一条数据
    *
    */
-  setDataPoint(params) {
-    return post(service+'/devData/setDataPoint', params);
+  setDataPoint(params,config) {
+    return post(service+'/devData/setDataPoint', params,config);
   }
 };

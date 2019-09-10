@@ -1,5 +1,6 @@
 <template>
-  <div style="margin-bottom: 100px">
+  <!-- <div style="margin-bottom: 100px"> -->
+  <div>
     <card style="margin-bottom: 10px;">
       <div slot="content">
         <flexbox>
@@ -77,7 +78,10 @@
     <span slot="no-more">
     已加载全部
   </span></infinite-loading>
-    <div class="tab-bottom">
+    <div class="login-out">
+      <x-button type="primary" mini @click.native="reLogin">切换账户</x-button>
+    </div>
+    <!--<div class="tab-bottom">
       <grid>
         <grid-item label="设备列表" link="/device" class="active">
           <img slot="icon" src="../assets/icon-device-active.png">
@@ -86,13 +90,13 @@
           <img slot="icon" src="../assets/icon-data.png">
         </grid-item>
       </grid>
-    </div>
+    </div>-->
   </div>
 
 </template>
 
 <script>
-  import {Grid, GridItem, CellBox, Flexbox, FlexboxItem, Icon, Toast,Card} from 'vux'
+  import {Grid, GridItem, CellBox, Flexbox, FlexboxItem, Icon, Toast,Card,XButton} from 'vux'
   import device from '@/api/device';
   import login from '@/api/login';
   import InfiniteLoading from 'vue-infinite-loading';
@@ -101,6 +105,7 @@
     name: 'device',
     components: {
       Grid,
+      XButton,
       GridItem,
       CellBox,
       Flexbox,
@@ -115,19 +120,34 @@
         deviceList: [],
         pageSize: 10,
         pageIndex: -1,
-        userInfo: {}
+        userInfo: {},
+        defaultAccount: 'hlfchina'
       }
     },
     created() {
       this.getUser();
     },
     methods: {
+      reLogin() {
+        this.$cookies.set('reLogin',1);
+        this.$router.push('/');
+      },
       async getUser() {
         const params = {
           token: this.$cookies.get('token'),
           account: this.$cookies.get('account')
         };
-        const data = await login.getUser(params);
+        let data;
+        if(this.$cookies.get('account')==this.defaultAccount){
+          data = await login.getUser(params);
+        } else {
+          data = await login.getUserL2(params,{
+            headers:{
+              loginuser:this.$cookies.get('account'),
+              token: this.$cookies.get('token')
+            }
+          });
+        }
         if(data.status == 200) {
           const res = data.data;
           const that = this;
@@ -161,7 +181,17 @@
             limit: this.pageSize
           }
         };
-        const data = await device.deviceList(params);
+        let data;
+        if(this.$cookies.get('account')==this.defaultAccount){
+          data = await device.deviceList(params);
+        } else {
+          data = await device.deviceListL2(params,{
+             headers:{
+               loginuser:this.$cookies.get('account'),
+               token: this.$cookies.get('token')
+             }
+           });
+        }
         if(data.status == 200) {
           const res = data.data;
           const that = this;
@@ -205,5 +235,11 @@
     border: 1px solid #eee;
     border-radius: 4px;
     box-shadow: 0 0 10px #ccc;
+  }
+  .login-out {
+    position: fixed;
+    right:15px;
+    top:20px;
+    z-index: 10;
   }
 </style>

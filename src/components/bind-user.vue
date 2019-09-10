@@ -3,19 +3,19 @@
     <div style="text-align:left;">
       <img src="../assets/login.png" alt="" class="ximg-demo">
     </div>
-    <div class="login-title"><span>汇励丰</span>节能增效智联平台</div>
+    <div class="login-title"><span>汇励丰</span>微信绑定用户</div>
     <div style="padding: 35px 20px 0;text-align: center">
-        <input type="text" class="input-box" placeholder="请输入账号" title="用户账号" v-model="account">
-        <input type="password" class="input-box" placeholder="请输入密码" title="用户密码" v-model="password">
+      <input type="text" class="input-box" placeholder="请输入账号" title="用户账号" v-model="account">
+      <input type="password" class="input-box" placeholder="请输入密码" title="用户密码" v-model="password">
       <div style="padding: 15px 0;">
-        <button @click="loginSub" class="btn-login">登录</button>
+        <button @click="bindUser" class="btn-login">确定</button>
       </div>
     </div>
   </div>
 </template>
 <script>
   import { Card, XInput,Toast,XButton,Divider } from 'vux'
-  import login from '@/api/login'
+  import wechat from '@/api/wechat'
   import md5 from 'js-md5';
   export default {
     components: {
@@ -33,52 +33,35 @@
         flag: false
       }
     },
-    created() {
-      this.flag = this.$cookies.get('reLogin') == '1' ? true : false;
-      if(this.flag) {
-        this.account = '';
-        this.password = '';
-      } else {
-        if(this.$cookies.get('account')) {
-          this.account = this.$cookies.get('account');
-          this.password = this.$cookies.get('password');
-          this.loginSub();
-        } else {
-          this.account = '';
-          this.password = '';
-        }
-      }
-    },
     mounted: function () {
 
     },
     methods: {
-      async loginSub(){
+      async bindUser(){
+        // 获取缓存的uid
+        const wechatuid = localStorage.getItem('wechatuid')
         const params = {
           account: this.account,
           password: md5(this.password),
+          wechatuid: wechatuid
         };
-        const data = await login.login(params);
+        const data = await wechat.bindL2(params);
         if(data.status == 200) {
           const res = data.data;
           const that = this;
           if (res.status === 0) {
             this.$vux.toast.show({
-              text: '登陆成功',
+              text: '绑定成功',
+              time: 3000,
               onShow() {
-                that.$cookies.set('account',res.data.account);
-                that.$cookies.set('password',that.password);
-                that.$cookies.set('token',res.data.token);
-                that.$cookies.set('reLogin',0);
               },
               onHide() {
-                that.$router.push('/device');
               }
             })
           } else {
             this.$vux.toast.show({
               type: 'warn',
-              text: '登陆失败'
+              text: '绑定失败'
             })
           }
         }
